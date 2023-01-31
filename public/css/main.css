@@ -1,0 +1,14 @@
+:root {
+    --main: #FF640D;
+    --submain: #31155B;
+}
+
+
+.registration_block {
+    display: flex;
+    justify-content: center;
+}
+.registration_block h1 {
+     color: var(--main);
+
+}
