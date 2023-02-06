@@ -2,34 +2,44 @@
 
 namespace App\Controller;
 
-use App\Entity\Admin;
+use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Repository\AdminRepository;
+use App\Message\VerifyUserEmail;
+use App\Repository\UserRepository;
+use App\Security\AuthAuthenticator;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\Security\Acl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
 
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(
+        private readonly EmailVerifier              $emailVerifier,
+        private readonly AuthAuthenticator          $authAuthenticator,
+        private readonly UserAuthenticatorInterface $authenticatorManager
+    )
     {
-        $this->emailVerifier = $emailVerifier;
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request                     $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface      $entityManager,
+        MessageBusInterface         $bus,
+    ): Response
     {
-        $user = new Admin();
+        $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -40,19 +50,24 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
+            $user->setRoles([Acl::ROLE_USER->name]);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('penyarik24@gmail.com', 'Geolocaors'))
-                    ->to($user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            $bus->dispatch(new VerifyUserEmail($user));
+
+            $this->authenticatorManager->authenticateUser(
+                $user,
+                $this->authAuthenticator,
+                new Request(request: [
+                    'email' => $form->get('email')->getData(),
+                    'password' => $form->get('plainPassword')->getData(),
+                    '_csrf_token' => ''
+                ])
             );
 
-            return $this->redirectToRoute('admin');
+            return $this->redirectToRoute($this->authAuthenticator->getSuccessLoginRouteRedirect($user->getEmail()));
         }
 
         return $this->render('registration/register.html.twig', [
@@ -61,7 +76,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, AdminRepository $adminRepository): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
     {
         $id = $request->get('id');
 
@@ -69,7 +84,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        $user = $adminRepository->find($id);
+        $user = $userRepository->find($id);
 
         if (null === $user) {
             return $this->redirectToRoute('app_register');
@@ -83,8 +98,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        $this->addFlash('success', 'Your email address has been verified.');
+        $this->addFlash('success', $translator->trans('Your email address has been verified.'));
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute($this->authAuthenticator->getSuccessLoginRouteRedirect($user->getEmail()));
     }
 }

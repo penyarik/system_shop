@@ -1,6 +1,11 @@
 framework:
     messenger:
         failure_transport: failed
+        buses:
+            global_bus:
+                middleware:
+                    - router_context
+                    - validation
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
@@ -19,6 +24,7 @@ framework:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
+            App\Message\VerifyUserEmail: async
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
