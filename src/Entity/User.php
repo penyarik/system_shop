@@ -32,6 +32,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(nullable: false)]
+    private ?int $locale_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,6 +115,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $is_verified): self
     {
         $this->isVerified = $is_verified;
+
+        return $this;
+    }
+
+    public function getLocaleId(): ?int
+    {
+        return $this->locale_id;
+    }
+
+    public function setLocaleId(int $locale_id): self
+    {
+        $this->locale_id = $locale_id;
 
         return $this;
     }

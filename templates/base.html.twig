@@ -15,6 +15,12 @@
         {% endblock %}
     </head>
     <body>
+    <a href="{{ path('locale', {locale: 'en'}) }}?route={{ path(app.request.attributes.get('_route'),
+        app.request.attributes.get('_route_params')) }}">En</a>
+    <a href="{{ path('locale', {locale: 'ua'}) }}?route={{ path(app.request.attributes.get('_route'),
+        app.request.attributes.get('_route_params')) }}">Ua</a>
+    <a href="{{ path('locale', {locale: 'ru'}) }}?route={{ path(app.request.attributes.get('_route'),
+        app.request.attributes.get('_route_params')) }}">Ru</a>
         {% block body %}{% endblock %}
     </body>
 </html>
