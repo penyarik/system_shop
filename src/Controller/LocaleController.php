@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,8 +20,8 @@ class LocaleController extends AbstractController
     ) {
     }
 
-    #[Route('/locale/{locale}', name: 'locale', requirements: ['locale' => 'ru|en|ua', 'route' => ".+"])]
-    public function locale(Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    #[Route('/locale/{locale}', name: 'locale', requirements: ['locale' => 'ru|en|ua'])]
+    public function locale(Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($locale = $this->localeRepository->findOneByField($request->attributes->get('locale'), 'name')) {
 
@@ -32,7 +33,7 @@ class LocaleController extends AbstractController
 
             $request->getSession()->set('_locale', $locale->getName());
 
-            return $this->redirect($request->get('route'));
+            return (new Response())->setStatusCode(Response::HTTP_CREATED);
 
         } else {
             throw new NotFoundHttpException();
