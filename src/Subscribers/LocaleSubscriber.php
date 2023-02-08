@@ -1,7 +1,7 @@
 <?php
 namespace App\Subscribers;
 
-use App\Repository\LocaleRepository;
+use App\CustomEntity\Locale;
 use App\Repository\UserRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -10,13 +10,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class LocaleSubscriber implements EventSubscriberInterface
 {
-    private string $defautlLocale;
-
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly LocaleRepository $localeRepository,
+        private readonly UserRepository $userRepository
     ) {
-        $this->defautlLocale = getenv('SITE_EMAIL_ADDRESS');
     }
 
     public function onKernelRequest(RequestEvent $event): void
@@ -28,14 +24,13 @@ class LocaleSubscriber implements EventSubscriberInterface
         if (!$request->getSession()->get('_locale')) {
 
             if ($email = $session->get('_security.last_username')) {
-                $localeId = $this->userRepository->findOneByField($email, 'email')->getLocaleId();
-                $localeName = $localeId ? $this->localeRepository->find($localeId)?->getName() : null;
+                $locale = strtolower(Locale::tryFrom($this->userRepository->findOneByField($email, 'email')->getLocaleId())?->name);
             }
 
-            $request->getSession()->set('_locale', $localeName ?? $this->defautlLocale);
+            $request->getSession()->set('_locale', $locale ?? $request->server->get('SITE_DEFAULT_LOCALE'));
         }
 
-        $request->setLocale($request->getSession()->get('_locale', $this->defautlLocale));
+        $request->setLocale($request->getSession()->get('_locale', $request->server->get('SITE_DEFAULT_LOCALE')));
     }
 
     public static function getSubscribedEvents(): array
