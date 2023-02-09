@@ -15,6 +15,10 @@
         {% endblock %}
     </head>
     <body>
+    <a class="language" data-route="{{ path('locale', {locale: 3}) }}">En</a>
+    <a class="language" data-route="{{ path('locale', {locale: 1}) }}">Ua</a>
+    <a class="language" data-route="{{ path('locale', {locale: 2}) }}">Ru</a>
         {% block body %}{% endblock %}
     </body>
+    <script src="{{ asset('js/locale.js') }}"></script>
 </html>
