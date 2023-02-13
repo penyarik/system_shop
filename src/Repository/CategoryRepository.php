@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,19 +45,18 @@ class CategoryRepository extends ServiceEntityRepository
     public function findPossibleParents(int $categoryId): array
     {
         return $this->createQueryBuilder('c')
-//            ->where(
-//                $em->getExpressionBuilder()->eq(
-//                    '(SELECT COUNT(cat.name) from App\Entity\Category cat WHERE cat.parent_id = c.id)',
-//                    0
-//                )
-//            )
+            ->where(
+                $this->getEntityManager()->getExpressionBuilder()->eq(
+                    '(SELECT COUNT(prod.name) from App\Entity\Product prod WHERE prod.category_id = c.id)',
+                    0
+                )
+            )
             ->andWhere('c.id != :val')
             ->setParameter('val', $categoryId)
             ->orderBy('c.updated_date', 'ASC')
             ->getQuery()
             ->getResult();
     }
-
 
     //add check if has products
     public function isDeletable(int $categoryId): bool
@@ -87,6 +87,7 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function findOneByField($value, string $field): ?array
     {
+
         return $this->createQueryBuilder('c')
             ->andWhere('c.' . $field . ' = :val')
             ->setParameter('val', $value)

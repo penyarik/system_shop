@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -13,6 +15,7 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[ORM\OneToMany(mappedBy: 'id', targetEntity: Product::class, cascade: ['persist'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
@@ -26,6 +29,10 @@ class Category
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_date = null;
+
+    public function __construct()
+    {
+    }
 
     public function getId(): ?int
     {

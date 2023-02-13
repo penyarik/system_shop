@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Category;
 use App\Form\CategoryFormType;
 use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,13 @@ class CategoryController extends AbstractController
 
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
+        private readonly ProductRepository $productRepository,
         private readonly TranslatorInterface $translator,
     )
     {
     }
 
-    #[Route('/admin/category/add/{parent?}', name: 'admin_category_add', requirements: ['locale' => '[0-9]+'])]
+    #[Route('/admin/category/add/{parent?}', name: 'admin_category_add', requirements: ['parent' => '[0-9]+'])]
     public function addAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -36,7 +38,15 @@ class CategoryController extends AbstractController
         $form = $this->createForm(CategoryFormType::class, ['parent_category' => $parentCategory ?? null]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $this->isNameValid($form->getData()['category_name'])) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+            && $this->isNameValid($form->getData()['category_name'])
+        ) {
+            if (!empty($this->productRepository->findOneByField($parentCategory, 'category_id'))) {
+                $this->addFlash('flash_error', $this->translator->trans('Unable to add sub category such as parent has products'));
+                return $this->redirectToRoute('admin_category_add');
+            }
             $category = new Category();
             $category
                 ->setName($form->getData()['category_name'])
@@ -79,7 +89,11 @@ class CategoryController extends AbstractController
             $form = $this->createForm(CategoryFormType::class, $options);
             $form->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid() && $this->isNameValid($form->getData()['category_name'])) {
+            if (
+                $form->isSubmitted()
+                && $form->isValid()
+                && $this->isNameValid($form->getData()['category_name'])
+            ) {
                 if ($form->getData()['parent'] === $category->getId()) {
                     $this->addFlash('flash_error', $this->translator->trans('Category cant has himself as a parent'));
 
@@ -88,11 +102,9 @@ class CategoryController extends AbstractController
                     ]);
                 }
 
-                $category = new Category();
                 $category
                     ->setName($form->getData()['category_name'])
                     ->setParentId($form->getData()['parent'])
-                    ->setCreatedDate(new \DateTime())
                     ->setUpdatedDate(new \DateTime());
 
                 $entityManager->persist($category);
@@ -128,13 +140,16 @@ class CategoryController extends AbstractController
     ): Response
     {
         if ($category = $this->categoryRepository->find($request->attributes->get('id'))) {
-            if ($this->categoryRepository->isDeletable($category->getId())) {
+            if (
+                $this->categoryRepository->isDeletable($category->getId())
+                && !$this->productRepository->findOneByField($category->getId(), 'category_id')
+            ) {
                 $entityManager->remove($category);
                 $entityManager->flush();
 
                 $this->addFlash('success', $this->translator->trans('Category has been deleted successfully'));
             } else {
-                $this->addFlash('success', $this->translator->trans('Category has sub categories or products!'));
+                $this->addFlash('flash_error', $this->translator->trans('Category has sub categories or products!'));
             }
 
             return $this->redirectToRoute('admin_category_add');
