@@ -1,0 +1,25 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Add Category!{% endblock %}
+
+{% block body %}
+
+   <div class="registration_block">
+      {% for flash_error in app.flashes('category_errors') %}
+         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+      {% endfor %}
+       {% for flash_error in app.flashes('flash_error') %}
+           <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+       {% endfor %}
+       {% for success in app.flashes('success') %}
+           <div class="alert alert-success" role="alert">{{ success }}</div>
+       {% endfor %}
+
+
+
+      <h1>Create Product</h1>
+
+      {{ form_start(productForm) }}{{ form_end(productForm) }}
+   </div>
+
+{% endblock %}

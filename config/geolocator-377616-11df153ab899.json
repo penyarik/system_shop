@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "geolocator-377616",
+  "private_key_id": "11df153ab899d25a0f15c7ddefb5ddde8a0ced1d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCWWB8m0E5fkax/\n96tkLExQALf0wRhFmeFpi9QFH/FbNHpjgjq8T/guQJXmhMchQellpYBSwU4h4ifw\nLfixXL7/Xjb5gOEQyq1Z9NyqKHf/+P/mHmDGxDdC02x+RcMJDroW9exdkyL/zP+w\n18NDrXyD0l3UHHWK9VMMH6kD3aSExycjxA2gk9oS0n7tTGjX9ZF5a9fmiul17C/F\nzLyNXvHuLkA0/JR86+CjYQzIlNovbt2naEd3+YzYH+vMIL/P2FhhjRDI7/I+VqOz\nfDLyO5lYiE4HKaN7iYq6d0BZ+0jdSfxf+Y2SAbOHSeriZsGbjoQpeF68VqCvecAh\nVZaxeX2vAgMBAAECggEAAnT/CsoeQt5lXraP43RZVUns/YXHQEUI8Lhp4Th4YBT6\nbcuevJIejHBqOgHNO36ACcCi/DFs0w3BFflz0G46pK3ZW4QNo8Biv7HtQF/se5U4\nlWbFa6osQe+Ny35Rjli/Z1q/zhrH+1RSM8tZdABJJPl1YNN0mq4ss2m0IxlDhYtr\nnW63ml2umrmCJ91A7qmgjjjKD7xiXZB9yEon/ZNkMRjEhs6o4M+90Y6LOse9o+yL\nJHdTO7gcoNZhf+lp0Sy7CykBHxd8dwJYeFiQhzedv7UZVQy6FZ9Ks94QTvwAnQRz\n+n84J6j+OwQYoC/6gJU5Dub8XYupdN3Aleib76JCwQKBgQDI34NRzUzKif4bYdju\ncuA3u1IsObeCFUMIGfGciLOFtcyncjWVTmDesbI2TOGUATql2N7PElNc0zLrWTcJ\ndmLgjnAV/X++ZCTLrMTnRz/hKVxWGR+GBYB4/HeNoQ4i5tl5Wngmpf4YSZ6utot+\n0Lqth3e++qcEh6d1KsbhlyvDQQKBgQC/mqpqPB3yF6CVPJt/SDweA1rjOuchmKs5\nJnn2Tu9WgUUaLrcJN3S0TOE5XAmRa9Dmkhg/Sye1AHrjMmjWW17W53j/8XXDMxQ1\n4dr42IDqVV09hls9omGaOjE92jeGZCIdV4G++Y8v2qXbGDBGDwY/nnuRXVAykVS4\nwPh/37U07wKBgEHaLKXrpQodNQXrDQAW/vSmX2kKPuPRbplAUBoeIqRqFj6qzXA2\nMsGvBZqRl746rOxj7Z97BYM/5ciMBeP/QKkXaR18bp2PHRT8fczIaeO5+IBtWg1I\nznZbZiIzM3wzrAYBp7Qb5PI3aGMkixS2/wwWhiZA6/IrOrXJoUuhkIJBAoGBAIyj\nEgL4LWLNROlFmz1J4BaHj+bKDWzzinpga5UHS1XLfNVDBMaXFepho89eZwd+g885\n3OJYX8TTnV+2WI0+c9Z6AK6cpTup+mOya+/LupRGJDJMtBwBXHK/0/T6f1b9mKzA\n1lM/CoKtkp/GmWhTDtsTkM+aFouHcRBLVBtIMNGxAoGAT3wcgBYbvf7CZPfomuQ1\nN4kRem3CCYhoUTBUN5dR8CG1jURtABUL6SMSHmeG4c7LKosYIJOnMXPULjQyLIHa\nKB2YMNEfINmadzmsLoH1Duc/eDHz7IajSITUylAoxZLsHSaNn+L6ZOLPFuOKnXqq\npu7bXxlYM5CLBx6HtVbbn8M=\n-----END PRIVATE KEY-----\n",
+  "client_email": "shopsystem@geolocator-377616.iam.gserviceaccount.com",
+  "client_id": "105810090692899712911",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/shopsystem%40geolocator-377616.iam.gserviceaccount.com"
+}
