@@ -6,6 +6,9 @@ use App\Repository\FileRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
+#[ORM\Index(name: "IDX_ENTITY_NAME", fields: ["entity_name"])]
+#[ORM\Index(name: "IDX_ENTITY_ID", fields: ["entity_id"])]
+#[ORM\Index(name: "IDX_FILE_NAME", fields: ["name"])]
 class File
 {
     #[ORM\Id]

@@ -8,6 +8,7 @@ use App\Form\CategoryFormType;
 use App\Form\ProductFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\SellerRepository;
 use App\Service\FileService;
 use App\Service\ProductService;
 use App\Validator\ProductValidator;
@@ -47,7 +48,7 @@ class ProductController extends AbstractController
             && $this->productValidator->validate($productData = array_merge($form->getData(), ['category_id' => $categoryId]))
         ) {
 
-            $productId = $this->productService->saveProduct($productData);
+            $productId = $this->productService->saveProduct($productData, $this->getUser());
 
             $this->addFlash('success', $this->translator->trans('Product has been saved successfully'));
 
@@ -86,7 +87,7 @@ class ProductController extends AbstractController
             $form->isSubmitted()
             && $form->isValid()
         ) {
-            $this->productService->saveProduct($form->getData(), $product);
+            $this->productService->saveProduct($form->getData(), $this->getUser(), $product);
 
             $this->addFlash('success', $this->translator->trans('Product has been updated successfully'));
 

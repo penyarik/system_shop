@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\Index(name: "IDX_CAT_PARENT_ID", fields: ["parent_id"])]
 class Category
 {
     #[ORM\Id]
@@ -29,6 +30,10 @@ class Category
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_date = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Seller $seller = null;
 
     public function __construct()
     {
@@ -83,6 +88,18 @@ class Category
     public function setCreatedDate(\DateTimeInterface $created_date): self
     {
         $this->created_date = $created_date;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(?Seller $seller): self
+    {
+        $this->seller = $seller;
 
         return $this;
     }

@@ -7,6 +7,9 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Index(name: "IDX_PRODUCT_IS_NEW", fields: ["is_new"])]
+#[ORM\Index(name: "IDX_PRODUCT_IS_TOP", fields: ["is_top"])]
+#[ORM\Index(name: "IDX_D34A04AD9777D11E", fields: ["category_id"])]
 class Product
 {
     #[ORM\Id]
@@ -40,7 +43,11 @@ class Product
     private ?bool $is_new = null;
 
     #[ORM\Column]
-    private ?int $amount = null; 
+    private ?int $amount = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Seller $seller = null;
 
     public function getId(): ?int
     {
@@ -169,6 +176,18 @@ class Product
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(?Seller $seller): self
+    {
+        $this->seller = $seller;
 
         return $this;
     }

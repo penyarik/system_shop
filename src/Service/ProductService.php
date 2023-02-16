@@ -3,12 +3,11 @@
 namespace App\Service;
 
 use App\CustomEntity\Currency;
-use App\CustomEntity\Locale;
 use App\Entity\Product;
-use App\Repository\FileRepository;
 use App\Repository\ProductRepository;
-use App\Repository\TranslationRepository;
+use App\Repository\SellerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ProductService
 {
@@ -17,6 +16,7 @@ class ProductService
         private readonly EntityManagerInterface $entityManager,
         private readonly FileService            $fileService,
         private readonly TranslationService     $translationService,
+        private readonly SellerRepository       $sellerRepository,
     )
     {
     }
@@ -42,7 +42,7 @@ class ProductService
 
     }
 
-    public function saveProduct(array $productData, Product $product = null): int
+    public function saveProduct(array $productData, UserInterface $user, Product $product = null): int
     {
         $isUpdate = !empty($product);
         $connection = $this->entityManager->getConnection();
@@ -56,7 +56,9 @@ class ProductService
                 ->setCurrencyPrice($productData)
                 ->setIsTop($productData['is_top'])
                 ->setIsNew($productData['is_new'])
-                ->setCategoryId($productData['category_id'] ?? $product->getCategoryId());
+                ->setCategoryId($productData['category_id'] ?? $product->getCategoryId())
+                ->setSeller($this->sellerRepository->findOneByField($user->getId(), 'user_id'));
+
 
             $this->entityManager->persist($product);
             $this->entityManager->flush();

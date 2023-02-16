@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Form\CategoryFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\SellerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ class CategoryController extends AbstractController
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
         private readonly TranslatorInterface $translator,
+        private readonly SellerRepository $sellerRepository,
     )
     {
     }
@@ -47,19 +49,26 @@ class CategoryController extends AbstractController
                 $this->addFlash('flash_error', $this->translator->trans('Unable to add sub category such as parent has products'));
                 return $this->redirectToRoute('admin_category_add');
             }
+
+
+
+
+
+
             $category = new Category();
             $category
                 ->setName($form->getData()['category_name'])
                 ->setParentId($form->getData()['parent'])
                 ->setCreatedDate(new \DateTime())
-                ->setUpdatedDate(new \DateTime());
+                ->setUpdatedDate(new \DateTime())
+                ->setSeller($this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id'));
 
             $entityManager->persist($category);
             $entityManager->flush($category);
 
             $this->addFlash('success', $this->translator->trans('Category has been saved successfully'));
 
-            return $this->redirectToRoute('admin_category_add');
+            return $this->redirectToRoute('admin_category_edit', ['id' => $category->getId()]);
         }
 
         return $this->render('admin/category.html.twig', [
