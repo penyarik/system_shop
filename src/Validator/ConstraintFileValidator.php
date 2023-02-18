@@ -15,7 +15,7 @@ class ConstraintFileValidator extends ConstraintValidator
          * @var $val UploadedFile
          */
         $size = 0;
-        foreach ($value as $val) {
+        foreach ($value ?? [] as $val) {
             $size += $val->getSize();
             $extension = explode('.', $val->getClientOriginalName())[1];
             if (!in_array($extension, $constraint->extensions)) {

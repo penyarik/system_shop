@@ -20,45 +20,38 @@ class FileService
     {
     }
 
-    public function saveFile(int $productId, array $files, bool $isGallery): void
+    public function saveFile(int $entityId, array $files, FileType $fileType, string $filePath): void
     {
         /**
          * @var UploadedFile $file
          */
         foreach ($files as $file) {
             $fileName = $this->getFileName($file);
-            $filePath = $isGallery ? getcwd() . '/' . self::IMAGE_PATH : getcwd() . '/' . self::ATTACHMENT_PATH;
             $file->move($filePath, $fileName);
 
             $file = new File();
             $file->setName($fileName)
                 ->setPath($filePath)
-                ->setEntityName($isGallery ? FileType::PRODUCT_GALLERY->name : FileType::PRODUCT_ATTACHMENT->name)
-                ->setEntityId($productId);
+                ->setEntityName($fileType->name)
+                ->setEntityId($entityId);
 
             $this->entityManager->persist($file);
             $this->entityManager->flush();
         }
     }
 
-    public function updateFile(int $productId, array $filesNew, bool $isGallery): void
+    public function updateFile(int $entityId, array $filesNew, FileType $fileType, string $filePath): void
     {
-        $entityName = $isGallery ? FileType::PRODUCT_GALLERY->name : FileType::PRODUCT_ATTACHMENT->name;
-        $files = $this->fileRepository->findByEntityIdAndEntityName($productId, $entityName);
+        $files = $this->fileRepository->findByEntityIdAndEntityName($entityId, $fileType->name);
 
         $this->remove($files);
 
-        $this->saveFile($productId, $filesNew, $isGallery);
+        $this->saveFile($entityId, $filesNew, $fileType, $filePath);
     }
 
-    public function removeFiles(int $productId): void
+    public function removeFiles(int $entityId, FileType $entityType): void
     {
-        $files = array_merge(
-             $this->fileRepository->findByEntityIdAndEntityName($productId, FileType::PRODUCT_GALLERY->name),
-             $this->fileRepository->findByEntityIdAndEntityName($productId, FileType::PRODUCT_ATTACHMENT->name)
-        );
-
-        $this->remove($files);
+        $this->remove($this->fileRepository->findByEntityIdAndEntityName($entityId, $entityType->name));
     }
 
     private function remove(array $files): void

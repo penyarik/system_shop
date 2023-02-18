@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\CustomEntity\TranslationType;
 use App\Entity\Category;
+use App\Entity\Seller;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -93,6 +95,35 @@ class CategoryRepository extends ServiceEntityRepository
             ->setParameter('val', $value)
             ->getQuery()
             ->setMaxResults(1)
+            ->getResult();
+    }
+
+    public function findByIdAndSeller(int $sellerId, int $id): ?Category
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.seller_id = :seller')
+            ->andWhere('c.id  = :id')
+            ->setParameter('seller', $sellerId)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getSellerMainCategories(int $sellerId, int $localeId): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('t')
+            ->andWhere('c.seller_id = :seller')
+            ->andWhere('c.parent_id IS NULL')
+            ->leftJoin(
+                'App\Entity\Translation',
+                't',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                'c.id = t.entity_id and t.entity_type = '.TranslationType::CATEGORY->value.' and t.locale = '.$localeId.''
+            )
+            ->setParameter('seller', $sellerId)
+            ->getQuery()
+            ->setMaxResults(10)
             ->getResult();
     }
 }

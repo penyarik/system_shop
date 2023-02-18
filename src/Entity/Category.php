@@ -34,6 +34,8 @@ class Category
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Seller $seller = null;
+    #[ORM\Column]
+    private ?int $seller_id = null;
 
     public function __construct()
     {

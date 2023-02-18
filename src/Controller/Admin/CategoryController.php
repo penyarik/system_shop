@@ -2,27 +2,37 @@
 
 namespace App\Controller\Admin;
 
+use App\CustomEntity\FileType;
+use App\CustomEntity\TranslationType;
 use App\Entity\Category;
+use App\Entity\Seller;
 use App\Form\CategoryFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SellerRepository;
+use App\Service\FileService;
+use App\Service\TranslationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CategoryController extends AbstractController
 {
+    private Seller $seller;
 
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
         private readonly TranslatorInterface $translator,
         private readonly SellerRepository $sellerRepository,
+        private readonly FileService $fileService,
+        private readonly TranslationService $translationService,
     )
     {
     }
@@ -35,38 +45,49 @@ class CategoryController extends AbstractController
     {
         if ($parentCategory = $request->attributes->get('parent')) {
             $parentCategory = $this->categoryRepository->find($parentCategory);
+            if (!$this->categoryRepository->findByIdAndSeller($this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id')->getId(), $parentCategory->getId())) {
+                throw new NotAcceptableHttpException();
+            }
         }
 
-        $form = $this->createForm(CategoryFormType::class, ['parent_category' => $parentCategory ?? null]);
+        $form = $this->createForm(CategoryFormType::class, ['parent_category' => $parentCategory ?? null, 'is_update' => false]);
         $form->handleRequest($request);
 
         if (
             $form->isSubmitted()
             && $form->isValid()
-            && $this->isNameValid($form->getData()['category_name'])
         ) {
             if (!empty($this->productRepository->findOneByField($parentCategory, 'category_id'))) {
                 $this->addFlash('flash_error', $this->translator->trans('Unable to add sub category such as parent has products'));
                 return $this->redirectToRoute('admin_category_add');
             }
+            $connection = $entityManager->getConnection();
+            $connection->beginTransaction();
 
+            try {
+                $category = new Category();
+                $category
+                    ->setName($form->getData()['name_en'])
+                    ->setParentId($form->getData()['parent'])
+                    ->setCreatedDate(new \DateTime())
+                    ->setUpdatedDate(new \DateTime())
+                    ->setSeller($this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id'));
 
+                $entityManager->persist($category);
+                $entityManager->flush();
 
+                $this->fileService->saveFile($category->getId(), [$form->getData()['image']], FileType::CATEGORY_IMAGE, FileService::IMAGE_PATH);
+                $this->fileService->saveFile($category->getId(), [$form->getData()['icon']], FileType::CATEGORY_ICON, FileService::IMAGE_PATH);
 
+                $this->translationService->saveTranslation($category->getId(), TranslationType::CATEGORY, $form->getData());
 
-
-            $category = new Category();
-            $category
-                ->setName($form->getData()['category_name'])
-                ->setParentId($form->getData()['parent'])
-                ->setCreatedDate(new \DateTime())
-                ->setUpdatedDate(new \DateTime())
-                ->setSeller($this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id'));
-
-            $entityManager->persist($category);
-            $entityManager->flush($category);
-
-            $this->addFlash('success', $this->translator->trans('Category has been saved successfully'));
+                $this->addFlash('success', $this->translator->trans('Category has been saved successfully'));
+                $connection->commit();
+            } catch (\Throwable $exception) {
+                $connection->rollBack();
+                $this->addFlash('flash_error', $this->translator->trans($exception->getMessage()));
+                return $this->redirectToRoute('admin_category_add');
+            }
 
             return $this->redirectToRoute('admin_category_edit', ['id' => $category->getId()]);
         }
@@ -84,7 +105,14 @@ class CategoryController extends AbstractController
     {
         if ($category = $this->categoryRepository->find($request->attributes->get('id'))) {
 
-            $options = ['category' => $category];
+            if (!$this->categoryRepository->findByIdAndSeller(
+                $this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id')->getId(),
+                $category->getId()
+            )) {
+                throw new NotAcceptableHttpException();
+            }
+
+            $options = ['category' => $category, 'is_update' => true];
 
             $options['parent_category'] = $this->categoryRepository->findPossibleParents($category->getId());
 
@@ -95,13 +123,14 @@ class CategoryController extends AbstractController
                 );
             }
 
+            $this->translationService->fillTranslationFormData($category->getId(), TranslationType::CATEGORY, $options);
+
             $form = $this->createForm(CategoryFormType::class, $options);
             $form->handleRequest($request);
 
             if (
                 $form->isSubmitted()
                 && $form->isValid()
-                && $this->isNameValid($form->getData()['category_name'])
             ) {
                 if ($form->getData()['parent'] === $category->getId()) {
                     $this->addFlash('flash_error', $this->translator->trans('Category cant has himself as a parent'));
@@ -111,15 +140,37 @@ class CategoryController extends AbstractController
                     ]);
                 }
 
-                $category
-                    ->setName($form->getData()['category_name'])
-                    ->setParentId($form->getData()['parent'])
-                    ->setUpdatedDate(new \DateTime());
+                $connection = $entityManager->getConnection();
+                $connection->beginTransaction();
 
-                $entityManager->persist($category);
-                $entityManager->flush($category);
+                try {
+                    $category
+                        ->setName($form->getData()['name_en'])
+                        ->setParentId($form->getData()['parent'])
+                        ->setUpdatedDate(new \DateTime());
 
-                $this->addFlash('success', $this->translator->trans('Category has been edited successfully'));
+                    $entityManager->persist($category);
+                    $entityManager->flush();
+
+                    if (!empty($form->getData()['image'])) {
+                        $this->fileService->updateFile($category->getId(), $form->getData()['image'], FileType::CATEGORY_IMAGE, FileService::IMAGE_PATH);
+                    }
+
+                    if (!empty($form->getData()['icon'])) {
+                        $this->fileService->updateFile($category->getId(), $form->getData()['icon'], FileType::CATEGORY_ICON, FileService::IMAGE_PATH);
+                    }
+
+                    $this->translationService->updateTranslation($category->getId(), TranslationType::CATEGORY, $form->getData());
+
+
+                    $connection->commit();
+
+                    $this->addFlash('success', $this->translator->trans('Category has been edited successfully'));
+                } catch (\Throwable $exception) {
+                    $connection->rollBack();
+                    $this->addFlash('flash_error', $this->translator->trans($exception->getMessage()));
+                    return $this->redirectToRoute('admin_category_edit', ['id' => $category->getId()]);
+                }
 
                 return $this->redirectToRoute('admin_category_edit', ['id' => $category->getId()]);
             }
@@ -149,10 +200,20 @@ class CategoryController extends AbstractController
     ): Response
     {
         if ($category = $this->categoryRepository->find($request->attributes->get('id'))) {
+
+            if (!$this->categoryRepository->findByIdAndSeller($this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id')->getId(), $category->getId())) {
+                throw new NotAcceptableHttpException();
+            }
+
             if (
                 $this->categoryRepository->isDeletable($category->getId())
                 && !$this->productRepository->findOneByField($category->getId(), 'category_id')
             ) {
+                $this->fileService->removeFiles($category->getId(), FileType::CATEGORY_ICON);
+                $this->fileService->removeFiles($category->getId(), FileType::CATEGORY_IMAGE);
+
+                $this->translationService->removeTranslations($category->getId(), TranslationType::CATEGORY);
+
                 $entityManager->remove($category);
                 $entityManager->flush();
 

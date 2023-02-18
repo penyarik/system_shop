@@ -68,13 +68,26 @@ class TranslationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByLocaleAndProduct(int $productId, int $locale): ?Translation
+    public function findByEntityIdAndEntityType(int $entityId, int $entityType): array
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.product_id = :product')
+            ->andWhere('t.entity_id = :id')
+            ->andWhere('t.entity_type = :type')
+            ->setParameter('id', $entityId)
+            ->setParameter('type', $entityType)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByLocaleAndEntityIdtAndEntityType(int $entityId, int $entityType, int $locale): ?Translation
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.entity_id = :id')
+            ->andWhere('t.entity_type = :type')
             ->andWhere('t.locale = :locale')
-            ->setParameter('product', $productId)
+            ->setParameter('id', $entityId)
             ->setParameter('locale', $locale)
+            ->setParameter('type', $entityType)
             ->getQuery()
             ->getOneOrNullResult();
     }

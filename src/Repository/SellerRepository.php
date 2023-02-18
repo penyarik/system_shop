@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Seller;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -59,6 +60,13 @@ class SellerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->andWhere('s.' . $field . ' = :val')
             ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findFirst(): ?Seller
+    {
+        return $this->createQueryBuilder('s')
             ->getQuery()
             ->getOneOrNullResult();
     }

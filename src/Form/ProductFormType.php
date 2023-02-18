@@ -41,7 +41,7 @@ class ProductFormType extends AbstractType
             'attr'     => [
                 'multiple' => 'multiple'
             ],
-            'required' => false,
+            'required' => !$formData['is_update'],
             'constraints' => [
                 new ConstraintFile(
                     maxSize: 10240000,
@@ -56,18 +56,33 @@ class ProductFormType extends AbstractType
                 'divisor' => 100,
                 'currency' => $currency->name,
                 'label' => 'Price ',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter price!',
+                    ]),
+                ],
             ]);
             $builder->add('delivery_cost_'.strtolower($currency->name), MoneyType::class, [
                 'data' => $formData['delivery_cost_'.strtolower($currency->name)] ?? null,
                 'divisor' => 100,
                 'currency' => $currency->name,
                 'label' => 'Delivery Cost per 1 item ',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter delivery cost!',
+                    ]),
+                ],
             ]);
             $builder->add('delivery_cost_step_'.strtolower($currency->name), MoneyType::class, [
                 'data' => $formData['delivery_cost_step_'.strtolower($currency->name)] ?? null,
                 'divisor' => 100,
                 'currency' => $currency->name,
                 'label' => 'Delivery Cost step for each next item ',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter delivery cost step!',
+                    ]),
+                ],
             ]);
         }
 
@@ -87,6 +102,7 @@ class ProductFormType extends AbstractType
                             'maxMessage' => 'Your name should not be more then 256 symbols',
                         ]),
                     ],
+                    'required' => true,
                 ])
                 ->add('description_'.strtolower($locale->name), CKEditorType::class, [
                     'data' => $formData['description_'.strtolower($locale->name)] ?? null,

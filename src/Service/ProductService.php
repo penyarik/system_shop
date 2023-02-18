@@ -3,10 +3,14 @@
 namespace App\Service;
 
 use App\CustomEntity\Currency;
+use App\CustomEntity\FileType;
+use App\CustomEntity\TranslationType;
 use App\Entity\Product;
+use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SellerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class ProductService
@@ -17,6 +21,7 @@ class ProductService
         private readonly FileService            $fileService,
         private readonly TranslationService     $translationService,
         private readonly SellerRepository       $sellerRepository,
+        private readonly CategoryRepository     $categoryRepository,
     )
     {
     }
@@ -45,6 +50,17 @@ class ProductService
     public function saveProduct(array $productData, UserInterface $user, Product $product = null): int
     {
         $isUpdate = !empty($product);
+
+        $sellerId = $this->sellerRepository->findOneByField($user->getId(), 'user_id')?->getId();
+
+        if (!$sellerId || !$this->categoryRepository->findByIdAndSeller($sellerId, $productData['category_id'] ?? $product->getCategoryId())) {
+            throw new NotAcceptableHttpException();
+        }
+
+        if ($isUpdate && !$this->productRepository->findByIdAndSeller($sellerId, $product->getId())) {
+            throw new NotAcceptableHttpException();
+        }
+
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();
 
@@ -64,17 +80,17 @@ class ProductService
             $this->entityManager->flush();
 
             if ($isUpdate) {
-                $this->translationService->updateTranslation($product, $productData);
+                $this->translationService->updateTranslation($product->getId(), TranslationType::PRODUCT, $productData);
                 if (!empty($productData['image'])) {
-                    $this->fileService->updateFile($product->getId(), $productData['image'], true);
+                    $this->fileService->updateFile($product->getId(), $productData['image'], FileType::PRODUCT_GALLERY, FileService::IMAGE_PATH);
                 }
                 if (!empty($productData['attachment'])) {
-                    $this->fileService->updateFile($product->getId(), $productData['attachment'], false);
+                    $this->fileService->updateFile($product->getId(), $productData['attachment'], FileType::PRODUCT_ATTACHMENT, FileService::ATTACHMENT_PATH);
                 }
             } else {
-                $this->fileService->saveFile($product->getId(), $productData['image'], true);
-                $this->fileService->saveFile($product->getId(), $productData['attachment'], false);
-                $this->translationService->saveTranslation($product, $productData);
+                $this->fileService->saveFile($product->getId(), $productData['image'], FileType::PRODUCT_GALLERY, FileService::IMAGE_PATH);
+                $this->fileService->saveFile($product->getId(), $productData['attachment'], FileType::PRODUCT_ATTACHMENT, FileService::ATTACHMENT_PATH);
+                $this->translationService->saveTranslation($product->getId(), TranslationType::PRODUCT, $productData);
             }
 
             $connection->commit();
@@ -86,14 +102,22 @@ class ProductService
         }
     }
 
-    public function removeProduct(Product $product): void
+    public function removeProduct(Product $product, UserInterface $user): void
     {
+        $sellerId = $this->sellerRepository->findOneByField($user->getId(), 'user_id')?->getId();
+
+        if (!$sellerId || !$this->productRepository->findByIdAndSeller($sellerId, $product->getId())) {
+            throw new NotAcceptableHttpException();
+        }
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();
 
         try {
-            $this->translationService->removeTranslations($product->getId());
-            $this->fileService->removeFiles($product->getId());
+            $this->translationService->removeTranslations($product->getId(), TranslationType::PRODUCT);
+
+            $this->fileService->removeFiles($product->getId(), FileType::PRODUCT_GALLERY);
+            $this->fileService->removeFiles($product->getId(), FileType::PRODUCT_ATTACHMENT);
+
             $this->entityManager->remove($product);
             $this->entityManager->flush();
             $connection->commit();

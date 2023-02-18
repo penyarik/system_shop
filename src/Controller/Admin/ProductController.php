@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -28,19 +29,27 @@ class ProductController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly ProductValidator    $productValidator,
         private readonly ProductRepository   $productRepository,
+        private readonly CategoryRepository  $categoryRepository,
+        private readonly SellerRepository     $sellerRepository,
     )
     {
     }
 
     #[Route('/admin/product/add/{category}', name: 'admin_product_add', requirements: ['category' => '[0-9]+'])]
     public function addAction(
-        Request                $request,
+        Request  $request,
     ): Response
     {
-        $form = $this->createForm(ProductFormType::class);
-        $form->handleRequest($request);
-
         $categoryId = $request->attributes->get('category');
+
+        $sellerId = $this->sellerRepository->findOneByField($this->getUser()->getId(), 'user_id')?->getId();
+
+        if (!$sellerId || !$this->categoryRepository->findByIdAndSeller($sellerId, $categoryId)) {
+            throw new NotAcceptableHttpException();
+        }
+
+        $form = $this->createForm(ProductFormType::class, ['form_data' => ['is_update' => false]]);
+        $form->handleRequest($request);
 
         if (
             $form->isSubmitted()
@@ -79,8 +88,9 @@ class ProductController extends AbstractController
 
         $form = $this->createForm(
             ProductFormType::class,
-            ['form_data' => $this->productService->getFormProductData($product)]
+            ['form_data' => array_merge($this->productService->getFormProductData($product), ['is_update' => true])]
         );
+
         $form->handleRequest($request);
 
         if (
@@ -113,7 +123,7 @@ class ProductController extends AbstractController
             if (
                 $this->productRepository->isDeletable($product->getId())
             ) {
-                $this->productService->removeProduct($product);
+                $this->productService->removeProduct($product, $this->getUser());
 
                 $this->addFlash('success', $this->translator->trans('Product has been deleted successfully'));
             } else {

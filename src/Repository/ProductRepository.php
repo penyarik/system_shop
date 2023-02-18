@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -51,6 +52,17 @@ class ProductRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findByIdAndSeller(int $sellerId, int $id): ?Product
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.seller_id = :seller')
+            ->andWhere('c.id  = :id')
+            ->setParameter('seller', $sellerId)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function isDeletable(int $productId): bool

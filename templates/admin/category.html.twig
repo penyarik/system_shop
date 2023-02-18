@@ -15,17 +15,9 @@
            <div class="alert alert-success" role="alert">{{ success }}</div>
        {% endfor %}
 
-      <h1>Create Category</h1>
+      <h1>Create Or Edit Category</h1>
 
-      {{ form_start(categoryForm) }}
-      {{ form_row(categoryForm.category_name, {
-          label: 'Category Name'
-      }) }}
-      {{ form_row(categoryForm.parent, {
-         label: 'Parent Category'
-      }) }}
-      <button type="submit" class="btn">Save</button>
-      {{ form_end(categoryForm) }}
+       {{ form_start(categoryForm) }}{{ form_end(categoryForm) }}
    </div>
 
 {% endblock %}

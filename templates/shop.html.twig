@@ -1,0 +1,360 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello!{% endblock %}
+
+{% block body %}
+    <main class="page">
+        <!-- SEARCH -->
+        <section class="page__search search">
+            <div class="search__container">
+                <div class="search__body">
+                    <div class="search__main">
+                        <h1 class="search__tagline"><span>S</span>mith</br> <span>s</span>urveying</br> <span>e</span>quipment</h1>
+                        <div class="search__desc">Equipped to meet your goals</div>
+                    </div>
+                    <div class="search__form form-search">
+                        <form action="#" class="form-search__item form">
+                            <picture><source srcset="img/search/search.webp" type="image/webp"><img src="img/search/search.png" alt="Search"></picture>
+                            <input autocomplete="off" type="text" name="form[]" data-error="Ошибка" placeholder="Search" class="form-search__input">
+                        </form>
+                        <button type="submit" class="form-search__button">Search</button>
+                    </div>
+                    <div class="search__cart cart-search">
+                        <a href="#!" class="cart-search__text">My cart</a>
+                        <a href="#!" class="cart-search__image">
+                            <picture><source srcset="img/search/cart.webp" type="image/webp"><img src="img/search/cart.png" alt="Cart"></picture>
+                            <span>2</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- MAIN -->
+        <section class="page__main main">
+            <div class="main__container">
+                <div class="main__body">
+                    <div class="main__menu menu">
+                        <nav class="menu__body">
+                            <ul class="menu__list">
+                                {% for category in categories %}
+                                    <li class="menu__item">
+                                        <a href="" class="menu__link">{{ category.getNameCategory() }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- Оболочка слайдера -->
+                    <div class="main__slider swiper">
+                        <!-- Двигающееся часть слайдера -->
+                        <div class="main__wrapper swiper-wrapper">
+                            <!-- Слайд -->
+                            <div class="main__slide swiper-slide">
+                                <picture><source srcset="img/main/slide-1.webp" type="image/webp"><img src="img/main/slide-1.jpg" alt="Slide"></picture>
+                            </div>
+                            <div class="main__slide swiper-slide">
+                                <picture><source srcset="img/main/slide-2.webp" type="image/webp"><img src="img/main/slide-2.jpg" alt="Slide"></picture>
+                            </div>
+                            <div class="main__slide swiper-slide">
+                                <picture><source srcset="img/main/slide-3.webp" type="image/webp"><img src="img/main/slide-3.jpg" alt="Slide"></picture>
+                            </div>
+                        </div>
+                        <!-- Если нужна навигация (влево/вправо) -->
+                        <button type="button" class="swiper-button-prev"></button>
+                        <button type="button" class="swiper-button-next"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- EQUIPMENT -->
+        <section class="page__equipment equipment">
+            <div class="equipment__container">
+                <div class="equipment__body">
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="equipment__item">
+                        <div class="equipment__image">
+                            <picture><source srcset="img/equipment/image-1.webp" type="image/webp"><img src="img/equipment/image-1.jpg" alt="Image"></picture>
+                        </div>
+                        <div class="equipment__content">
+                            <h2 class="equipment__title title-h2">Surveying equipment</h2>
+                            <div class="equipment__menu menu-equipment">
+                                <nav class="menu-equipment__body">
+                                    <ul class="menu-equipment__list">
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Air Flow Meters</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Angle</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Measurement</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Batteries</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Books – Survey & Level</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Cables</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">Carriers</a></li>
+                                        <li class="menu-equipment__item"><a href="#!" class="menu-equipment__link">......</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WELCOME -->
+        <section class="page__welcome welcome">
+            <div class="welcome__container">
+                <div class="welcome__body">
+                    <h2 class="welcome__title title-h2">Welcome to the Smith Surveying Equipment Limited Online Store</h2>
+                    <div class="welcome__text text">
+                        <p>Smith Surveying Equipment Limited supply, hire, service & calibrate surveying & safety equipment to the survey, construction & engineering industries.</p>
+                        <p>Serving the Humberside region from our base in Hull, East Yorkshire, we sell, hire, repair, service & calibrate land survey and construction laser equipment, including Total Stations, Theodolites, GPS Surveying Equipment, Levels, Laser Levels, Pipe Lasers, Dual Grade Lasers, Surveying Accessories and Cable & Pipe Detectors.</p>
+                        <p>With equipment manufactured by Leica, Topcon, Geomax, Radiodetection, Sokkia, Pentax, Trimble, Spectra Precision, Suparule, C.Scope and Datum to name a few, you can be sure that you will find exactly what you need to complete any task successfully.</p>
+                        <p>Call us on 01482 322191 or 07900 217081 to discuss your requirements.</p>
+                        <p>We have stock of new and reconditioned instruments available, and we also puchase Used Surveying Equipment.</p>
+                        <p>Overseas enquiries are always welcome. We are experienced in international exports and ship worldwide!</p>
+                    </div>
+                    <div class="welcome__menu menu-welcome">
+                        <nav class="menu-welcome__body">
+                            <ul class="menu-welcome__list">
+                                <li class="menu-welcome__item"><a href="#!" class="menu-welcome__link">About us</a></li>
+                                <li class="menu-welcome__item"><a href="#!" class="menu-welcome__link">Contact us</a></li>
+                                <li class="menu-welcome__item"><a href="#!" class="menu-welcome__link">Services & Calibration</a></li>
+                                <li class="menu-welcome__item"><a href="#!" class="menu-welcome__link">Equipment hire</a></li>
+                                <li class="menu-welcome__item"><a href="#!" class="menu-welcome__link">Latest news</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- TOP -->
+        <section class="page__top top">
+            <div class="top__container">
+                <div class="top_body">
+                    <div class="top__cards">
+                        <div class="top__main main-top">
+                            <div class="main-top__lable">
+                                <div class="main-top__lable-icon">
+                                    <img src="img/top/fire.svg" alt="Fire">
+                                </div>
+                                <div class="main-top__lable-text">TOP Products</div>
+                            </div>
+                            <div class="main-top__menu menu-main-top">
+                                <nav class="menu-main-top__body">
+                                    <ul class="menu-main-top__list">
+                                        <li class="menu-main-top__item"><a href="#!" class="menu-main-top__link">Detection & safety</a></li>
+                                        <li class="menu-main-top__item"><a href="#!" class="menu-main-top__link">Used equipment</a></li>
+                                        <li class="menu-main-top__item"><a href="#!" class="menu-main-top__link">Distance measuring</a></li>
+                                        <li class="menu-main-top__item"><a href="#!" class="menu-main-top__link">Surveying equipment</a></li>
+                                        <li class="menu-main-top__item"><a href="#!" class="menu-main-top__link">Survey Acc</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="top__cards cards-top">
+                            <div class="cards-top__item">
+                                <div class="cards-top__image">
+                                    <picture><source srcset="img/top/image-1.webp" type="image/webp"><img src="img/top/image-1.jpg" alt="Image"></picture>
+                                </div>
+                                <div class="cards-top__desc">RECONDITIONED LEICA TCR805...</div>
+                                <div class="cards-top__price price-top">
+                                    <div class="price-top__value">£2,350.00</div>
+                                    <div class="price-top__amount">
+                                        <button type="submit" class="price-top__button _minus">-</button>
+                                        <div class="price-top__thing">1 шт.</div>
+                                        <button type="submit" class="price-top__button _plus">+</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="cards-top__add-button button">
+                                    <img src="img/top/basket.svg" alt="Basket">
+                                    <div class="cards-top__add-text">Add to cart</div>
+                                </button>
+                            </div>
+                            <div class="cards-top__item">
+                                <div class="cards-top__image">
+                                    <picture><source srcset="img/top/image-2.webp" type="image/webp"><img src="img/top/image-2.jpg" alt="Image"></picture>
+                                </div>
+                                <div class="cards-top__desc">RECONDITIONED LEICA TCR805...</div>
+                                <div class="cards-top__price price-top">
+                                    <div class="price-top__value">£2,350.00</div>
+                                    <div class="price-top__amount">
+                                        <button type="submit" class="price-top__button _minus">-</button>
+                                        <div class="price-top__thing">1 шт.</div>
+                                        <button type="submit" class="price-top__button _plus">+</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="cards-top__add-button button">
+                                    <img src="img/top/basket.svg" alt="Basket">
+                                    <div class="cards-top__add-text">Add to cart</div>
+                                </button>
+                            </div>
+                            <div class="cards-top__item">
+                                <div class="cards-top__image">
+                                    <picture><source srcset="img/top/image-3.webp" type="image/webp"><img src="img/top/image-3.jpg" alt="Image"></picture>
+                                </div>
+                                <div class="cards-top__desc">RECONDITIONED LEICA TCR805...</div>
+                                <div class="cards-top__price price-top">
+                                    <div class="price-top__value">£2,350.00</div>
+                                    <div class="price-top__amount">
+                                        <button type="submit" class="price-top__button _minus">-</button>
+                                        <div class="price-top__thing">1 шт.</div>
+                                        <button type="submit" class="price-top__button _plus">+</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="cards-top__add-button button">
+                                    <img src="img/top/basket.svg" alt="Basket">
+                                    <div class="cards-top__add-text">Add to cart</div>
+                                </button>
+                            </div>
+                            <div class="cards-top__item">
+                                <div class="cards-top__image">
+                                    <picture><source srcset="img/top/image-4.webp" type="image/webp"><img src="img/top/image-4.jpg" alt="Image"></picture>
+                                </div>
+                                <div class="cards-top__desc">RECONDITIONED LEICA TCR805...</div>
+                                <div class="cards-top__price price-top">
+                                    <div class="price-top__value">£2,350.00</div>
+                                    <div class="price-top__amount">
+                                        <button type="submit" class="price-top__button _minus">-</button>
+                                        <div class="price-top__thing">1 шт.</div>
+                                        <button type="submit" class="price-top__button _plus">+</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="cards-top__add-button button">
+                                    <img src="img/top/basket.svg" alt="Basket">
+                                    <div class="cards-top__add-text">Add to cart</div>
+                                </button>
+                            </div>
+                            <div class="cards-top__item">
+                                <div class="cards-top__image">
+                                    <picture><source srcset="img/top/image-5.webp" type="image/webp"><img src="img/top/image-5.jpg" alt="Image"></picture>
+                                </div>
+                                <div class="cards-top__desc">RECONDITIONED LEICA TCR805...</div>
+                                <div class="cards-top__price price-top">
+                                    <div class="price-top__value">£2,350.00</div>
+                                    <div class="price-top__amount">
+                                        <button type="submit" class="price-top__button _minus">-</button>
+                                        <div class="price-top__thing">1 шт.</div>
+                                        <button type="submit" class="price-top__button _plus">+</button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="cards-top__add-button button">
+                                    <img src="img/top/basket.svg" alt="Basket">
+                                    <div class="cards-top__add-text">Add to cart</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
+
+
+
