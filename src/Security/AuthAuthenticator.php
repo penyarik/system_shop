@@ -57,7 +57,7 @@ class AuthAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return new RedirectResponse(
-            $this->urlGenerator->generate($this->getSuccessLoginRouteRedirect($request->request->get('email', '')))
+            $this->urlGenerator->generate('seller_shop', ['seller_id' => $this->userRepository->findOneByField($request->request->get('email', ''), 'email')->getSellerId()])
         );
     }
 

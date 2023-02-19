@@ -28,10 +28,15 @@ class ShopController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $seller = $this->userService->getSeller($request->attributes->get('parent') ?? null);
+        $user = $this->getUser();
 
         return $this->render('shop.html.twig', [
             'categories' => $this->categoryRepository->getSellerMainCategories($seller->getId(), Locale::getLocaleValue($request->getLocale())),
-            'modify_access' => $this->getUser()->getId() === $seller->getUser()->getId()
+            'modify_access' => $user && $user->getId() === $seller->getUser()->getId(),
+            'is_logged' => !is_null($user),
+            'seller_id' => $seller->getId(),
+            'is_admin' => $this->userService->isAdmin($user),
+            'currency' => $request->getSession()->get('_currency'),
         ]);
     }
 }

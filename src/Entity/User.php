@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\Index(name: "INDEX_USER_CURRENCY", fields: ["currency"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -36,6 +37,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\Column(nullable: false)]
     private ?int $locale_id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Seller $seller = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $currency = null;
 
     public function getId(): ?int
     {
@@ -127,6 +135,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLocaleId(int $locale_id): self
     {
         $this->locale_id = $locale_id;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function getSellerId(): ?int
+    {
+        return $this->seller?->getId();
+    }
+
+    public function setSeller(?Seller $seller): self
+    {
+        $this->seller = $seller;
+
+        return $this;
+    }
+
+    public function getCurrency(): ?int
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(int $currency): self
+    {
+        $this->currency = $currency;
 
         return $this;
     }

@@ -21,14 +21,30 @@
                     <img src="{{ asset('icon/logo.svg') }}" alt="Logo">
                 </a>
                 <div class="header__contacts">
-                    <a href="tel:01482 322191" class="header__phone"><span>Phone:</span> 01482 322191</a>
-                    <a href="mailto:simon@smithsurveyingequipment.co.uk" class="header__email"><span>E-mail:</span> simon@smithsurveyingequipment.co.uk</a>
+                    <a href="tel:01482 322191" class="header__phone"><span>{{ 'Phone'|trans }}:</span> 01482 322191</a>
+                    <a href="mailto:simon@smithsurveyingequipment.co.uk" class="header__email"><span>{{ 'E-mail'|trans }}:</span> simon@smithsurveyingequipment.co.uk</a>
                 </div>
-                <a href="#!" class="header__articles">Articles</a>
-                <a href="#!" class="header__articles">Log In</a>
-                <a class="language" data-route="{{ path('locale', {locale: 3}) }}">En</a>
+                <a href="#!" class="header__articles">{{ 'Articles'|trans }}</a>
+                {% if is_logged == true %}
+                    <a href="{{ path('app_logout') }}" class="header__articles">{{ 'Log Out'|trans }}</a>
+                     {% if is_admin == true %}
+                        <a href="{{ path('admin') }}" class="header__articles">{{ 'Account'|trans }}</a>
+                     {% else %}
+                         <a href="{{ path('profile') }}" class="header__articles">{{ 'Account'|trans }}</a>
+                     {% endif %}
+                {% else %}
+                    <a href="{{ path('app_login', {seller_id: seller_id}) }}" class="header__articles">{{ 'Log In'|trans }}</a>
+                    <a href="{{ path('app_register', {seller_id: seller_id}) }}" class="header__articles">{{ 'Register'|trans }}</a>
+                {% endif %}
+                 <a class="language" data-route="{{ path('locale', {locale: 3}) }}">En</a>
                 <a class="language" data-route="{{ path('locale', {locale: 1}) }}">Ua</a>
                 <a class="language" data-route="{{ path('locale', {locale: 2}) }}">Ru</a>
+
+
+                <a class="currency" data-route="{{ path('currency', {currency: 1}) }}">USD</a>
+                <a class="currency" data-route="{{ path('currency', {currency: 2}) }}">EUR</a>
+                <a class="currency" data-route="{{ path('currency', {currency: 3}) }}">UAH</a>
+                <a class="currency" data-route="{{ path('currency', {currency: 4}) }}">GBP</a>
             </div>
         </div>
     </header>

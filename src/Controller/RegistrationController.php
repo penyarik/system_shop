@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Message\VerifyUserEmail;
+use App\Repository\SellerRepository;
 use App\Repository\UserRepository;
 use App\Security\AuthAuthenticator;
 use App\Security\EmailVerifier;
@@ -26,12 +27,13 @@ class RegistrationController extends AbstractController
     public function __construct(
         private readonly EmailVerifier              $emailVerifier,
         private readonly AuthAuthenticator          $authAuthenticator,
-        private readonly UserAuthenticatorInterface $authenticatorManager
+        private readonly UserAuthenticatorInterface $authenticatorManager,
+        private readonly SellerRepository $sellerRepository,
     )
     {
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route('/register/{seller_id}', name: 'app_register', requirements: ['seller_id' => '[0-9]+'])]
     public function register(
         Request                     $request,
         UserPasswordHasherInterface $userPasswordHasher,
@@ -39,6 +41,10 @@ class RegistrationController extends AbstractController
         MessageBusInterface         $bus,
     ): Response
     {
+        if ($this->getUser()) {
+            $this->redirectToRoute('seller_shop', ['seller_id' => $this->getUser()->getSeller()->getId()]);
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -50,7 +56,8 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-            $user->setRoles([Acl::ROLE_USER->name]);
+            $user->setRoles([Acl::ROLE_USER->name])
+                ->setSeller($this->sellerRepository->find($request->attributes->get('seller_id')));
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -67,11 +74,16 @@ class RegistrationController extends AbstractController
                 ])
             );
 
-            return $this->redirectToRoute($this->authAuthenticator->getSuccessLoginRouteRedirect($user->getEmail()));
+            return $this->redirectToRoute(
+                $this->authAuthenticator->getSuccessLoginRouteRedirect($user->getEmail())
+            );
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
+            'is_logged' => false,
+            'seller_id' => $request->attributes->get('seller_id'),
+            'is_admin' => false,
         ]);
     }
 

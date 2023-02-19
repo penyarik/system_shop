@@ -14,7 +14,7 @@
                     </div>
                     <div class="search__form form-search">
                         <form action="#" class="form-search__item form">
-                            <picture><source srcset="img/search/search.webp" type="image/webp"><img src="img/search/search.png" alt="Search"></picture>
+                            <picture><source srcset="{{ asset('icon/search.webp') }}" type="image/webp"><img src="{{ asset('icon/search.webp') }}" alt="Search"></picture>
                             <input autocomplete="off" type="text" name="form[]" data-error="Ошибка" placeholder="Search" class="form-search__input">
                         </form>
                         <button type="submit" class="form-search__button">Search</button>
@@ -22,7 +22,7 @@
                     <div class="search__cart cart-search">
                         <a href="#!" class="cart-search__text">My cart</a>
                         <a href="#!" class="cart-search__image">
-                            <picture><source srcset="img/search/cart.webp" type="image/webp"><img src="img/search/cart.png" alt="Cart"></picture>
+                            <picture><source srcset="{{ asset('icon/cart.webp') }}" type="image/webp"><img src="{{ asset('icon/cart.webp') }}" alt="Cart"></picture>
                             <span>2</span>
                         </a>
                     </div>
@@ -41,6 +41,12 @@
                                         <a href="" class="menu__link">{{ category.getNameCategory() }}</a>
                                     </li>
                                 {% endfor %}
+                                {% if modify_access == true %}
+                                    <li class="menu__item">
+                                        <a href="{{ path('admin_category_add') }}" class="menu__link">+</a>
+                                    </li>
+                                {% endif %}
+
                             </ul>
                         </nav>
                     </div>
